@@ -1,0 +1,22 @@
+title = "Kerem Bozdas"
+email = "kerem@kerembozdas.com"
+description = "Personal blog of Kerem Bozdas"
+baseurl = ""
+url = "https://blog.kerembozdas.com"
+github_username = "krmbzds"
+remote_theme = "jekyll/minima"
+plugins = [
+  "jekyll-asciidoc",
+  "jekyll-feed",
+  "jekyll-remote-theme",
+]
+
+[minima]
+skin = "auto"
+
+[asciidoctor]
+attributes = [
+  "idprefix=_",
+  "source-highlighter=pygments",
+  "pygments-stylesheet!",
+]
