@@ -1,9 +1,8 @@
 title = "Kerem Bozdas"
 email = "kerem@kerembozdas.com"
-description = "Personal blog of Kerem Bozdas"
-baseurl = ""
 url = "https://blog.kerembozdas.com"
-github_username = "krmbzds"
+description = "Personal blog"
+show_excerpts = true
 remote_theme = "jekyll/minima"
 plugins = [
   "jekyll-asciidoc",
@@ -14,6 +13,7 @@ plugins = [
 
 [minima]
 skin = "auto"
+date_format = "%b %-d, %Y"
 
 [asciidoctor]
 attributes = [
