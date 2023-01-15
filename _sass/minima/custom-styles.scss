@@ -5,11 +5,19 @@ h3 {
 }
 
 body {
-  font-size: 18px;
-  line-height: 1.5;
+  font: 18px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-display: optional;
 }
 
 @media (prefers-color-scheme: light) {
+  // Minima-light modificatitons
+  :root {
+    --minima-text-color: #444;
+    --minima-background-color: #f8f8f8;
+  }
+
   // GitHub Light
   .highlight .tok-hll { background-color: #ffffcc }
   .highlight .tok-c { color: #999988; font-style: italic } /* Comment */
