@@ -7,6 +7,7 @@ github_username = "krmbzds"
 remote_theme = "jekyll/minima"
 plugins = [
   "jekyll-asciidoc",
+  "jekyll-compose",
   "jekyll-feed",
   "jekyll-remote-theme",
 ]
@@ -20,3 +21,11 @@ attributes = [
   "source-highlighter=pygments",
   "pygments-stylesheet!",
 ]
+
+[jekyll_compose]
+auto_open = true
+
+[jekyll_compose.default_front_matter.posts]
+description = "TODO: Add description"
+published = true
+sitemap = true
