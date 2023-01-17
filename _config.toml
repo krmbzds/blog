@@ -9,6 +9,7 @@ plugins = [
   "jekyll-compose",
   "jekyll-feed",
   "jekyll-remote-theme",
+  "jekyll-sitemap",
 ]
 
 [minima]
