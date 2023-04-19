@@ -1,0 +1,66 @@
+---
+layout: post
+title: My newfound appreciation for LuaSnip
+date: 2023-04-19 10:49 +0300
+description: 'I learned how to write Lua snippets'
+published: true
+sitemap: true
+tags: neovim
+---
+
+Are you familiar with Neovim, the popular text editor? If so, you may have heard of https://github.com/L3MON4D3/LuaSnip[LuaSnip], a snippet engine written entirely in Lua. 
+
+I recently wanted to add my own snippet to create Sidekiq workers. During my search, I came across a YouTube playlist called https://www.youtube.com/watch?v=Vr7A90_tSns&list=PL0EgBggsoPCnZ3a6c0pZuQRMgS_Z8-Fnr[LuaSnip Zero to Hero]. s1n7ax does a great job explaining how to write snippets in Lua. I recommend anyone interested in writing their own Lua snippets to watch it.
+
+Whether it's XML or JSON-based, most snippet engines come with their own syntax definitions which are often encumbered with constraints. I have dealt with them in the past. After playing around with Lua snippets, I was amazed how flexible they are. You have to see it to believe it. So check it out.
+
+Here's the snippet I wrote for creating an ActiveRecord Job:
+
+[source,lua]
+..config/nvim/snippets/rails.lua
+----
+local luasnip = require("luasnip")
+local fmt = require("luasnip.extras.fmt").fmt
+
+local s = luasnip.snippet
+local t = luasnip.text_node
+local c = luasnip.choice_node
+local i = luasnip.insert_node
+
+luasnip.add_snippets("rails", {
+  s(
+    "job",
+    fmt(
+      [[
+      class {}Job < ActiveJob::Base
+        queue_as :{}
+        sidekiq_options retry: {}, backtrace: {}
+
+        def perform({})
+          {}
+        end
+      end
+      ]],
+      {
+        i(1, "Example"),
+        c(2, { t("default"), t("low"), t("high"), t("critical") }),
+        i(3, "25"),
+        i(4, "false"),
+        i(5, "*args"),
+        i(6),
+      }
+    )
+  ),
+})
+----
+
+I had to add https://github.com/krmbzds/nvim/commit/af8ec80d8ea6552275d58718e0276d9c8dfd72a6[this line] to load my custom snippets in my `lsp-zero` config:
+
+[source,lua]
+.lua/config/plugins/lsp-zero.lua
+----
+require("luasnip.loaders.from_lua").load({ paths = vim.fn.stdpath("config") .. "/snippets/" })
+require("luasnip.loaders.from_vscode").lazy_load() -- friendly-snippets
+----
+
+Go wild!
