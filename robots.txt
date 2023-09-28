@@ -1,0 +1,23 @@
+---
+layout: none
+---
+User-Agent: ChatGPT-User
+User-Agent: GPTBot
+User-Agent: ahrefsbot
+User-Agent: amazonbot
+User-Agent: aspiegelbot
+User-Agent: blexbot
+User-Agent: dataforseobot
+User-Agent: dotbot
+User-Agent: facebookscraper
+User-Agent: mj12bot
+User-Agent: rogerbot
+User-Agent: seekport crawler
+User-Agent: semrushbot
+User-Agent: semrushbot-sa
+User-Agent: turnitinbot
+User-Agent: yandex
+User-Agent: zoominfobot
+Disallow: /
+
+Sitemap: {{ site.url }}/sitemap.xml
