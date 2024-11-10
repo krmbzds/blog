@@ -1,0 +1,38 @@
+---
+layout: post
+title: 'New release: turkish_id v1.7.0'
+date: 2024-11-10 16:15 +0300
+description: 'Now you can query foreigner registry'
+published: true
+sitemap: true
+tags: rubygems
+---
+
+I've released a new version of `turkish_id` gem.
+
+Now, it supports querying ID numbers for people that are not a Turkish citizen but are registered in the https://en.wikipedia.org/wiki/Blue_Card_(Turkey)[blue card] registry. The numerical validation works the same way, so no differences there. There is a separate endpoint for querying ID numbers that are in the blue card registry; hence the new `foreigner_registered?` method. 
+
+Here's how you can use it. First, create a new instance:
+
+[source,rb]
+----
+identity_number = TurkishId.new("99911494534")
+----
+
+Use `valid?` method to check numerical validity:
+
+[source,rb]
+----
+identity_number.valid?  #=> true
+----
+
+Use `foreigner_registered?` method to query the foreigner registry:
+
+[source,rb]
+----
+identity_number.foreigner_registered?("Yukihiro", "Matsumoto", 14, 4, 1965)  #=> false
+----
+
+And that's how you can query a person with a https://en.wikipedia.org/wiki/Blue_Card_(Turkey)[blue card]. Hope you find it helpful.
+
+Happy hacking!
