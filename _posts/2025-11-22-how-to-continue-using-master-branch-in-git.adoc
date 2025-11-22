@@ -1,0 +1,115 @@
+---
+layout: post
+title: How to continue using master branch in Git
+date: 2025-11-22 10:19 +0300
+description: Old habits die hard
+published: true
+sitemap: true
+tags: git
+---
+
+Git https://lore.kernel.org/lkml/xmqqv9ildh46.fsf@gitster.c.googlers.com[v2.28.0] configuration options to allow users to define their preferred default branch name for new repositories. The default branch was changed to `main`.
+
+== Configuring Local Repositories
+
+If you prefer to stick with `master`, you can set a global configuration that `git init` will respect:
+
+[source,console]
+----
+$ git config --global init.defaultBranch "master"
+----
+
+Now, every time you run `git init`, your repository will start with `master` instead of `main`.
+
+== The Problem with Cloning
+
+While `init.defaultBranch` enforces your preference for *new* local repositories, forks inherit the upstream repository's default branch. If you have muscle memory for `git push origin master` or simply prefer the consistency of `master` across all your personal projects, this is annoying. You have to manually rename the branch, push the new branch, update the default branch on the remote, and delete the old one.
+
+== Automating the Fix
+
+To solve this, I wrote a small Ruby script that wraps `git clone`. It checks if the repository belongs to `github.username`, clones the repository, renames default branch to `master`, pushes the `master` branch, uses `gh` to change default branch to `master`, and deletes the old branch.
+
+First, make sure you have your GitHub username configured:
+
+[source,console]
+----
+$ git config --global github.username "krmbzds"
+----
+
+Here is the script, which I've named `git-clone`:
+
+[source,ruby]
+----
+#!/usr/bin/env ruby
+
+repo_url = ARGV[0] || abort("Usage: #{$PROGRAM_NAME} <repo_url>")
+user = `git config github.username 2>/dev/null`.strip
+exec("git", "clone", repo_url) if user.empty? || !repo_url.match?(%r{[:/](#{Regexp.escape(user)})/})
+
+if system("git", "clone", repo_url)
+  dir = File.basename(repo_url, ".git")
+
+  system("which", "gh", out: File::NULL) &&
+    (owner, repo_name = repo_url.match(%r{github\.com[:/](.+?)/(.+?)(?:\.git)?$}).captures) &&
+    system("git", "-C", dir, "checkout", "-b", "master", "origin/main") &&
+    system("git", "-C", dir, "push", "-u", "origin", "master") &&
+    system("gh", "api", "--silent", "repos/#{owner}/#{repo_name}", "-X", "PATCH", "-f", "default_branch=master") &&
+    system("git", "-C", dir, "branch", "-D", "main") &&
+    system("git", "-C", dir, "push", "origin", "--delete", "main")
+end
+----
+
+Currently the script only works for GitHub repositories. However, you can easily adapt or extend it.
+
+== Usage
+
+To use this script without replacing your system `git` binary, you can define a shell function in your `.zshrc` or `.bashrc`. This function will intercept `git clone` commands and route them to our script, while passing all other commands to the standard git binary.
+
+[source,bash]
+----
+git() {
+  if [ "$1" = "clone" ]; then
+    shift
+    ~/bin/git-clone "$@"
+  else
+    command git "$@"
+  fi
+}
+----
+
+For the script to work you need to install https://github.com/cli/cli?tab=readme-ov-file#installation[gh] and login with:
+
+[source,console]
+----
+$ gh auth login
+----
+
+Now you can clone any repository like usual:
+[source,console]
+----
+$ git clone https://github.com/krmbzds/rails
+Cloning into 'rails'...
+remote: Enumerating objects: 763230, done.
+remote: Counting objects: 100% (124/124), done.
+remote: Compressing objects: 100% (77/77), done.
+remote: Total 763230 (delta 75), reused 47 (delta 47), pack-reused 763106 (from 3)
+Receiving objects: 100% (763230/763230), 216.12 MiB | 6.72 MiB/s, done.
+Resolving deltas: 100% (570644/570644), done.
+branch 'master' set up to track 'origin/main'.
+Switched to a new branch 'master'
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+remote:
+remote: Create a pull request for 'master' on GitHub by visiting:
+remote:      https://github.com/krmbzds/rails/pull/new/master
+remote:
+To https://github.com/krmbzds/rails
+ * [new branch]            master -> master
+branch 'master' set up to track 'origin/master'.
+Deleted branch main (was 8aebd0b507).
+To https://github.com/krmbzds/rails
+ - [deleted]               main
+----
+
+Now all your forks will use master.
+
+Happy hacking!
