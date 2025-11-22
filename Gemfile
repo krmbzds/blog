@@ -6,6 +6,7 @@ group :jekyll_plugins do
   gem "base64"
   gem "csv"
   gem "logger"
+  gem "openssl"
   gem "ostruct"
   gem "pygments.rb"
   gem "racc"
